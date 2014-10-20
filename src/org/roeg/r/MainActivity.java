@@ -1,6 +1,7 @@
 package org.roeg.r;
 
 import java.util.ArrayList;
+
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,6 +10,8 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -36,7 +39,17 @@ public class MainActivity extends Activity {
         		android.R.layout.simple_list_item_1,
         		items);
         list.setAdapter(aa);
-        
+        list.setOnItemClickListener(new OnItemClickListener()
+        {
+          @Override
+          public void onItemClick(AdapterView arg0, View arg1, int arg2,long arg3)
+          {
+              String i = (String)items.get(arg2);
+              aa.remove(i);
+              db.execSQL("DELETE FROM text WHERE item IS \"%s\"".replace("%s", i));
+              aa.notifyDataSetChanged();
+          }
+      });
         Cursor c = db.rawQuery("SELECT * FROM text",null);
         String i;
         while (c.moveToNext()){
