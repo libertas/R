@@ -64,10 +64,14 @@ public class MainActivity extends Activity {
 					if((keyCode == KeyEvent.KEYCODE_DPAD_CENTER) ||
 							(keyCode == KeyEvent.KEYCODE_ENTER)){
 						String i = text.getText().toString();
+						if (items.contains(i)) {
+							db.execSQL("DELETE FROM text WHERE item IS\"%s\"".replace("%s", i));
+							aa.remove(i);
+						}
 						items.add(0,i);
+						aa.notifyDataSetChanged();;
 						db.execSQL("INSERT INTO text VALUES (NULL, ?)",
 								new Object[]{i});
-						aa.notifyDataSetChanged();;
 						text.setText("");
 						return true;
 					}
