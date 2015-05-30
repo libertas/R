@@ -12,9 +12,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
@@ -22,6 +24,7 @@ public class MainActivity extends Activity {
     private ArrayAdapter<String> aa;
     private ArrayList<String> items;
     private SQLiteDatabase db;
+    private EditText text;
 
     
 	@Override
@@ -32,7 +35,7 @@ public class MainActivity extends Activity {
         db.execSQL("CREATE TABLE IF NOT EXISTS text (_id INTEGER PRIMARY KEY AUTOINCREMENT, item VARCHAR)"); 
         
         ListView list = (ListView) findViewById(R.id.listView1);
-        final EditText text = (EditText) findViewById(R.id.editText1);
+        text = (EditText) findViewById(R.id.editText1);
         items = new ArrayList<String>();
         
         aa = new ArrayAdapter<String>(this,
@@ -50,6 +53,18 @@ public class MainActivity extends Activity {
               aa.notifyDataSetChanged();
           }
       });
+        
+        list.setOnItemLongClickListener(new OnItemLongClickListener(){
+			public boolean onItemLongClick(AdapterView<?> arg0, View view, final int location, long arg3) {
+				String s = ((String) items.get(location));
+				aa.remove(s);
+				text.setText(s);
+				db.execSQL("DELETE FROM text WHERE item IS \"%s\"".replace("%s", s));
+				aa.notifyDataSetChanged();
+				return true;
+			}
+		});
+        
         Cursor c = db.rawQuery("SELECT * FROM text",null);
         String i;
         while (c.moveToNext()){
