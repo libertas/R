@@ -56,7 +56,16 @@ public class MainActivity extends Activity {
         
         list.setOnItemLongClickListener(new OnItemLongClickListener(){
 			public boolean onItemLongClick(AdapterView<?> arg0, View view, final int location, long arg3) {
+				String tmp = text.getText().toString();
 				String s = ((String) items.get(location));
+				if(tmp != "")
+				{
+					items.add(0,tmp);
+					aa.notifyDataSetChanged();;
+					db.execSQL("INSERT INTO text VALUES (NULL, ?)",
+							new Object[]{tmp});
+					text.setText("");
+				}
 				aa.remove(s);
 				text.setText(s);
 				db.execSQL("DELETE FROM text WHERE item IS \"%s\"".replace("%s", s));
